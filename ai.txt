@@ -1,0 +1,142 @@
+using System;
+using System.Diagnostics;
+
+namespace BoardGame
+{
+    public class Game
+    {
+        private const int BoardSize = 8;
+        private const int MaxDepth = 100; // Maximum depth to search within the time limit
+        private const int TimeLimitInSeconds = 3;
+
+        private char[,] board;
+        private char currentPlayer;
+
+       public Game()
+        {
+            board = new char[BoardSize, BoardSize];
+            InitializeBoard();
+        }
+
+        private void InitializeBoard()
+        {
+            for (int row = 0; row < BoardSize; row++)
+            {
+                for (int col = 0; col < BoardSize; col++)
+                {
+                    board[row, col] = ' ';
+                }
+            }
+        }
+
+   public Tuple<int, int> Minimax(char[][] currBoard)
+{
+    Stopwatch stopwatch = new Stopwatch();
+    stopwatch.Start();
+
+    Tuple<int, int> bestMove = Tuple.Create(-1, -1);
+    int bestScore = int.MinValue;
+    int alpha = int.MinValue;
+    int beta = int.MaxValue;
+
+    for (int i = 0; i < BoardSize; i++)
+    {
+        for (int j = 0; j < BoardSize; j++)
+        {
+            if (IsValidMove(currBoard, i, j))
+            {
+                currBoard[i][j] = 'X';
+                int score = Minimax(currBoard, 1, false, alpha, beta, stopwatch);
+                currBoard[i][j] = ' ';
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestMove = Tuple.Create(i, j);
+                }
+
+                alpha = Math.Max(alpha, bestScore);
+
+                // Prune the search if beta <= alpha
+                if (beta <= alpha)
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    stopwatch.Stop();
+    TimeSpan elapsedTime = stopwatch.Elapsed;
+
+    Console.WriteLine("Elapsed time: " + elapsedTime.TotalSeconds + " seconds");
+
+    return bestMove;
+}
+
+private int Minimax(char[][] currBoard, int depth, bool isMaximizingPlayer, int alpha, int beta, Stopwatch stopwatch)
+{
+    if (IsGameOver(currBoard) || depth >= MaxDepth || stopwatch.Elapsed.TotalSeconds >= TimeLimitInSeconds)
+    {
+        return GetScore(currBoard);
+    }
+
+    if (isMaximizingPlayer)
+    {
+        int bestScore = int.MinValue;
+
+        for (int i = 0; i < BoardSize; i++)
+        {
+            for (int j = 0; j < BoardSize; j++)
+            {
+                if (IsValidMove(currBoard, i, j))
+                {
+                    currBoard[i][j] = 'X';
+                    int score = Minimax(currBoard, depth + 1, false, alpha, beta, stopwatch);
+                    currBoard[i][j] = ' ';
+
+                    bestScore = Math.Max(bestScore, score);
+
+                    alpha = Math.Max(alpha, bestScore);
+
+                    // Prune the search if beta <= alpha
+                    if (beta <= alpha)
+                    {
+                        return bestScore;
+                    }
+                }
+            }
+        }
+
+        return bestScore;
+    }
+    else
+    {
+        int bestScore = int.MaxValue;
+
+        for (int i = 0; i < BoardSize; i++)
+        {
+            for (int j = 0; j < BoardSize; j++)
+            {
+                if (IsValidMove(currBoard, i, j))
+                {
+                    currBoard[i][j] = 'O';
+                    int score = Minimax(currBoard, depth + 1, true, alpha, beta, stopwatch);
+                    currBoard[i][j] = ' ';
+
+                    bestScore = Math.Min(bestScore, score);
+
+                    beta = Math.Min(beta, bestScore);
+
+                    // Prune the search if beta <= alpha
+                    if (beta <= alpha)
+                    {
+                        return bestScore;
+                    }
+                }
+            }
+        }
+
+        return bestScore;
+    }
+}

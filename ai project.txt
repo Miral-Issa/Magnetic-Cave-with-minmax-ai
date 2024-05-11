@@ -1,0 +1,183 @@
+using System;
+
+namespace MagneticCave
+{
+    class Program
+    {
+        static char[,] board = new char[8, 8];
+        static char currentPlayer = '■';
+        static bool gameOver = false;
+
+        static void Main(string[] args)
+        {
+            InitializeBoard();
+
+            while (!gameOver)
+            {
+                DrawBoard();
+                MakeMove();
+                CheckWinningConditions();
+                SwitchPlayer();
+            }
+
+            Console.ReadLine();
+        }
+
+        static void InitializeBoard()
+        {
+            Array.Fill(board, ' ');
+        }
+
+        static void DrawBoard()
+        {
+            Console.Clear();
+
+            Console.WriteLine("   1   2   3   4   5   6   7   8");
+            for (int row = 0; row < 8; row++)
+            {
+                Console.Write((row + 1) + "  ");
+                for (int col = 0; col < 8; col++)
+                {
+                    Console.Write(" {0} ", board[row, col]);
+                    if (col < 7)
+                        Console.Write("|");
+                }
+                Console.WriteLine();
+                if (row < 7)
+                    Console.WriteLine("  ---------------------------------");
+            }
+        }
+
+        static void MakeMove()
+        {
+            Console.WriteLine("Player {0}'s turn. Enter the row (1-8):", currentPlayer);
+            int row = int.Parse(Console.ReadLine()) - 1;
+
+            Console.WriteLine("Enter the column (1-8):");
+            int col = int.Parse(Console.ReadLine()) - 1;
+
+            if (!IsValidMove(row, col))
+            {
+                Console.WriteLine("Invalid move. Try again.");
+                MakeMove();
+            }
+            else
+            {
+                board[row, col] = currentPlayer;
+            }
+        }
+
+        static bool IsValidMove(int row, int col)
+        {
+            if (col < 0 || col >= 8 || board[row, col] != ' ')
+                return false;
+
+            if (col > 0 && board[row, col - 1] != currentPlayer)
+                return false;
+
+            if (col < 7 && board[row, col + 1] != currentPlayer)
+                return false;
+
+            return true;
+        }
+
+        static void CheckWinningConditions()
+        {
+            if (CheckConsecutiveCells())
+            {
+                Console.WriteLine("Player {0} wins!", currentPlayer);
+                gameOver = true;
+                return;
+            }
+
+            if (IsBoardFull())
+            {
+                Console.WriteLine("It's a draw!");
+                gameOver = true;
+            }
+        }
+
+        static bool CheckConsecutiveCells()
+        {
+            for (int row = 0; row < 8; row++)
+            {
+                for (int col = 0; col < 4; col++)
+                {
+                    if (board[row, col] == currentPlayer &&
+                        board[row, col + 1] == currentPlayer &&
+                        board[row, col + 2] == currentPlayer &&
+                        board[row, col + 3] == currentPlayer &&
+                        board[row, col + 4] == currentPlayer)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            for (int col = 0; col < 8; col++)
+            {
+                for (int row = 0; row < 4; row++)
+                {
+                    if (board[row, col] == currentPlayer &&
+                        board[row + 1, col] == currentPlayer &&
+                        board[row + 2, col] == currentPlayer &&
+                        board[row + 3, col] == currentPlayer &&
+                        board[row + 4, col] == currentPlayer)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            for (int row = 0; row < 4; row++)
+            {
+                for (int col = 0; col < 4; col++)
+                {
+                    if (board[row, col] == currentPlayer &&
+                        board[row + 1, col + 1] == currentPlayer &&
+                        board[row + 2, col + 2] == currentPlayer &&
+                        board[row + 3, col + 3] == currentPlayer &&
+                        board[row + 4, col + 4] == currentPlayer)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            for (int row = 0; row < 4; row++)
+            {
+                for (int col = 4; col < 8; col++)
+                {
+                    if (board[row, col] == currentPlayer &&
+                        board[row + 1, col - 1] == currentPlayer &&
+                        board[row + 2, col - 2] == currentPlayer &&
+                        board[row + 3, col - 3] == currentPlayer &&
+                        board[row + 4, col - 4] == currentPlayer)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        static bool IsBoardFull()
+        {
+            for (int row = 0; row < 8; row++)
+            {
+                for (int col = 0; col < 8; col++)
+                {
+                    if (board[row, col] == ' ')
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        static void SwitchPlayer()
+        {
+            currentPlayer = (currentPlayer == '■') ? '□' : '■';
+        }
+    }
+}

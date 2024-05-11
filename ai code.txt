@@ -1,0 +1,97 @@
+ public bool checkWinningConditions(int col,int row)
+    {
+        Dictionary<int, int[]> temp;
+        if (playerSide == "X")
+        {
+            temp = Xhistory;
+        }
+        else
+        {
+            temp = Ohistory;
+        }
+
+        //check the same row
+        if(!newCol)
+        {
+            for(int j=0;j<4;j++)
+            {
+                if (temp[col][j] == 1 &&
+                    temp[col][j + 1] == 1 &&
+                    temp[col][j + 2] == 1 &&
+                    temp[col][j + 3] == 1 &&
+                    temp[col][j + 4] == 1)
+                {
+                    return true;
+                }
+            }
+        }
+
+        //check the same column
+        if(temp.Count>=5)
+        {
+            foreach (KeyValuePair<int, int[]> ele in temp)
+            {
+                try
+                {
+                    if (temp[ele.Key][row] == 1 &&
+                        temp[ele.Key + 1][row] == 1 &&
+                        temp[ele.Key + 2][row] == 1 &&
+                        temp[ele.Key + 3][row] == 1 &&
+                        temp[ele.Key + 4][row] == 1)
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+        }
+
+        //check diagonals
+        foreach(KeyValuePair<int, int[]> ele in temp)
+        {
+            for(int j=0;j<4;j++)
+            {
+                try
+                {
+                    if (temp[ele.Key][j] == 1 &&
+                        temp[ele.Key + 1][j + 1] == 1 &&
+                        temp[ele.Key + 2][j + 2] == 1 &&
+                        temp[ele.Key + 3][j + 3] == 1 &&
+                        temp[ele.Key + 4][j + 4] == 1)
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+        }
+
+        foreach (KeyValuePair<int, int[]> ele in temp)
+        {
+            for(int j=4;j<8;j++)
+            {
+                try
+                {
+                    if (temp[ele.Key][j] == 1 &&
+                     temp[ele.Key + 1][j - 1] == 1 &&
+                     temp[ele.Key + 2][j - 2] == 1 &&
+                     temp[ele.Key + 3][j - 3] == 1 &&
+                     temp[ele.Key + 4][j - 4] == 1)
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+        }
+            return false;
+    }

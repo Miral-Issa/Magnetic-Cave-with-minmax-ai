@@ -1,0 +1,93 @@
+ static int[] FindBestMove()
+        {
+            int bestScore = int.MinValue;
+            int[] bestMove = new int[2];
+
+            for (int row = 0; row < 8; row++)
+            {
+                for (int col = 0; col < 8; col++)
+                {
+                    if (board[row, col] == ' ')
+                    {
+                        board[row, col] = currentPlayer;
+                        int score = Minimax(board, 0, false, int.MinValue, int.MaxValue);
+                        board[row, col] = ' ';
+
+                        if (score > bestScore)
+                        {
+                            bestScore = score;
+                            bestMove[0] = row;
+                            bestMove[1] = col;
+                        }
+                    }
+                }
+            }
+
+            return bestMove;
+        }
+
+        static int Minimax(char[,] board, int depth, bool isMaximizingPlayer, int alpha, int beta)
+        {
+            char opponent = (currentPlayer == '■') ? '□' : '■';
+
+            if (CheckConsecutiveCells())
+            {
+                if (currentPlayer == '■')
+                    return 1;
+                else
+                    return -1;
+            }
+
+            if (IsBoardFull())
+                return 0;
+
+            if (isMaximizingPlayer)
+            {
+                int bestScore = int.MinValue;
+
+                for (int row = 0; row < 8; row++)
+                {
+                    for (int col = 0; col < 8; col++)
+                    {
+                        if (board[row, col] == ' ')
+                        {
+                            board[row, col] = currentPlayer;
+                            int score = Minimax(board, depth + 1, false, alpha, beta);
+                            board[row, col] = ' ';
+
+                            bestScore = Math.Max(bestScore, score);
+                            alpha = Math.Max(alpha, bestScore);
+
+                            if (beta <= alpha)
+                                break;
+                        }
+                    }
+                }
+
+                return bestScore;
+            }
+            else
+            {
+                int bestScore = int.MaxValue;
+
+                for (int row = 0; row < 8; row++)
+                {
+                    for (int col = 0; col < 8; col++)
+                    {
+                        if (board[row, col] == ' ')
+                        {
+                            board[row, col] = opponent;
+                            int score = Minimax(board, depth + 1, true, alpha, beta);
+                            board[row, col] = ' ';
+
+                            bestScore = Math.Min(bestScore, score);
+                            beta = Math.Min(beta, bestScore);
+
+                            if (beta <= alpha)
+                                break;
+                        }
+                    }
+                }
+
+                return bestScore;
+            }

@@ -1,0 +1,262 @@
+ private int GetScore(char[][] currBoard)
+{
+    // Check for winning configurations
+    if (IsWinningConfiguration(currBoard, 'X'))
+    {
+        return int.MaxValue; // Max score for the maximizing player (X)
+    }
+    else if (IsWinningConfiguration(currBoard, 'O'))
+    {
+        return int.MinValue; // Min score for the minimizing player (O)
+    }
+    else if (IsBoardFull(currBoard))
+    {
+        return 0; // Tie game, score of 0
+    }
+    else
+    {
+        // Calculate the score based on the number of aligned bricks
+        int score = CalculateAlignedBricks(currBoard, 'X') - CalculateAlignedBricks(currBoard, 'O');
+        return score;
+    }
+}
+
+private bool IsWinningConfiguration(char[][] currBoard, char player)
+{
+    // Check for winning configurations in rows, columns, and diagonals
+    if (CheckRows(currBoard, player) || CheckColumns(currBoard, player) || CheckDiagonals(currBoard, player))
+    {
+        return true;
+    }
+    return false;
+}
+
+private bool CheckRows(char[][] currBoard, char player)
+{
+    for (int row = 0; row < BoardSize; row++)
+    {
+        for (int col = 0; col <= BoardSize - 5; col++)
+        {
+            bool isWinning = true;
+            for (int k = 0; k < 5; k++)
+            {
+                if (currBoard[row][col + k] != player)
+                {
+                    isWinning = false;
+                    break;
+                }
+            }
+            if (isWinning)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+private bool CheckColumns(char[][] currBoard, char player)
+{
+    for (int col = 0; col < BoardSize; col++)
+    {
+        for (int row = 0; row <= BoardSize - 5; row++)
+        {
+            bool isWinning = true;
+            for (int k = 0; k < 5; k++)
+            {
+                if (currBoard[row + k][col] != player)
+                {
+                    isWinning = false;
+                    break;
+                }
+            }
+            if (isWinning)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+private bool CheckDiagonals(char[][] currBoard, char player)
+{
+    // Check diagonals starting from top-left to bottom-right
+    for (int row = 0; row <= BoardSize - 5; row++)
+    {
+        for (int col = 0; col <= BoardSize - 5; col++)
+        {
+            bool isWinning = true;
+            for (int k = 0; k < 5; k++)
+            {
+                if (currBoard[row + k][col + k] != player)
+                {
+                    isWinning = false;
+                    break;
+                }
+            }
+            if (isWinning)
+            {
+                return true;
+            }
+        }
+    }
+
+    // Check diagonals starting from top-right to bottom-left
+    for (int row = 0; row <= BoardSize - 5; row++)
+    {
+        for (int col = BoardSize - 1; col >= 4; col--)
+        {
+            bool isWinning = true;
+            for (int k = 0; k < 5; k++)
+            {
+                if (currBoard[row + k][col - k] != player)
+                {
+                    isWinning = false;
+                    break;
+                }
+            }
+            if (isWinning)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+private bool IsBoardFull(char[][] currBoard)
+{
+    // Check if the board is full (no empty cells)
+    for (int row = 0; row < BoardSize; row++)
+    {
+        for (int col = 0; col < BoardSize; col++)
+        {
+            if (currBoard[row][col] == ' ')
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+private int CalculateAlignedBricks(char[][] currBoard, char player)
+{
+    int alignedBricks = 0;
+
+    // Calculate the number of aligned bricks in rows
+    alignedBricks += CalculateAlignedBricksInRows(currBoard, player);
+
+    // Calculate the number of aligned bricks in columns
+    alignedBricks += CalculateAlignedBricksInColumns(currBoard, player);
+
+    // Calculate the number of aligned bricks in diagonals
+    alignedBricks += CalculateAlignedBricksInDiagonals(currBoard, player);
+
+    return alignedBricks;
+}
+
+private int CalculateAlignedBricksInRows(char[][] currBoard, char player)
+{
+    int alignedBricks = 0;
+
+    for (int row = 0; row < BoardSize; row++)
+    {
+        for (int col = 0; col <= BoardSize - 5; col++)
+        {
+            bool isAligned = true;
+            for (int k = 0; k < 5; k++)
+            {
+                if (currBoard[row][col + k] != player)
+                {
+                    isAligned = false;
+                    break;
+                }
+            }
+            if (isAligned)
+            {
+                alignedBricks++;
+            }
+        }
+    }
+
+    return alignedBricks;
+}
+
+private int CalculateAlignedBricksInColumns(char[][] currBoard, char player)
+{
+    int alignedBricks = 0;
+
+    for (int col = 0; col < BoardSize; col++)
+    {
+        for (int row = 0; row <= BoardSize - 5; row++)
+        {
+            bool isAligned = true;
+            for (int k = 0; k < 5; k++)
+            {
+                if (currBoard[row + k][col] != player)
+                {
+                    isAligned = false;
+                    break;
+                }
+            }
+            if (isAligned)
+            {
+                alignedBricks++;
+            }
+        }
+    }
+
+    return alignedBricks;
+}
+
+private int CalculateAlignedBricksInDiagonals(char[][] currBoard, char player)
+{
+    int alignedBricks = 0;
+
+    // Calculate aligned bricks in diagonals starting from top-left to bottom-right
+    for (int row = 0; row <= BoardSize - 5; row++)
+    {
+        for (int col = 0; col <= BoardSize - 5; col++)
+        {
+            bool isAligned = true;
+            for (int k = 0; k < 5; k++)
+            {
+                if (currBoard[row + k][col + k] != player)
+                {
+                    isAligned = false;
+                    break;
+                }
+            }
+            if (isAligned)
+            {
+                alignedBricks++;
+            }
+        }
+    }
+
+    // Calculate aligned bricks in diagonals starting from top-right to bottom-left
+    for (int row = 0; row <= BoardSize - 5; row++)
+    {
+        for (int col = BoardSize - 1; col >= 4; col--)
+        {
+            bool isAligned = true;
+            for (int k = 0; k < 5; k++)
+            {
+                if (currBoard[row + k][col - k] != player)
+                {
+                    isAligned = false;
+                    break;
+                }
+            }
+            if (isAligned)
+            {
+                alignedBricks++;
+            }
+        }
+    }
+
+    return alignedBricks;
+}
